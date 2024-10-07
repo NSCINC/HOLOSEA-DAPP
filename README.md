@@ -1,8 +1,5 @@
-Here’s an updated version of your **HoloSea DApp** documentation with futuristic emojis and an introduction about AI.
 
----
-
-# ⚡ HoloSea DApp ⚡ 
+# 🍄♻️ HoloSea DApp♻️🍄
 
 ## 🌌 Technologies Utilized
 
@@ -73,4 +70,4 @@ Follow the specific instructions in the respective folders for building and runn
 - Add any specific commands or scripts that are relevant to the setup and running of the project.
 - If applicable, include instructions on how to contribute or report issues with the project.
 
-Feel free to let me know if you need any further modifications or additional information!
+
