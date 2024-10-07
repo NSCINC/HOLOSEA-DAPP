@@ -2,6 +2,7 @@
     "files.associations": {
         "holosea.C": "cpp",
         "NET.C": "cpp",
-        "OBJJETO.C": "cpp"
+        "OBJJETO.C": "cpp",
+        "MASTER.C": "cpp"
     }
 }
