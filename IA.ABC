@@ -1,0 +1,114 @@
+// Declaração de estrutura para armazenar dados de servidores
+structure Server {
+    string name
+    string status
+    string ownerEmail
+}
+
+// Função para abrir a conexão com o banco de dados
+function connectDatabase() -> sqlite3 {
+    sqlite3 db
+    int rc = sqlite3_open("apollo_holofi.db", &db)
+
+    if rc {
+        print("Erro ao abrir banco de dados: ", sqlite3_errmsg(db))
+        return NULL
+    } else {
+        print("Banco de dados aberto com sucesso.")
+        return db
+    }
+}
+
+// Função para inicializar o banco de dados, criando a tabela Servers
+function initializeDatabase(sqlite3 db) {
+    string sql = "CREATE TABLE IF NOT EXISTS Servers (" +
+                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                 "name TEXT NOT NULL," +
+                 "status TEXT NOT NULL," +
+                 "owner_email TEXT NOT NULL);"
+
+    char* errMsg = NULL
+    int rc = sqlite3_exec(db, sql, NULL, NULL, &errMsg)
+
+    if rc != SQLITE_OK {
+        print("Erro ao criar tabela: ", errMsg)
+        sqlite3_free(errMsg)
+    } else {
+        print("Tabela Servers criada ou já existe.")
+    }
+}
+
+// Função para inserir um servidor no banco de dados
+function insertServer(sqlite3 db, Server server) {
+    string sql = "INSERT INTO Servers(name, status, owner_email) VALUES(?, ?, ?);"
+    sqlite3_stmt stmt
+
+    if sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) != SQLITE_OK {
+        print("Falha ao preparar statement: ", sqlite3_errmsg(db))
+        return
+    }
+
+    sqlite3_bind_text(stmt, 1, server.name, -1, SQLITE_STATIC)
+    sqlite3_bind_text(stmt, 2, server.status, -1, SQLITE_STATIC)
+    sqlite3_bind_text(stmt, 3, server.ownerEmail, -1, SQLITE_STATIC)
+
+    if sqlite3_step(stmt) != SQLITE_DONE {
+        print("Erro ao inserir servidor: ", sqlite3_errmsg(db))
+    } else {
+        print("Servidor ", server.name, " inserido com sucesso.")
+    }
+
+    sqlite3_finalize(stmt)
+}
+
+// Função para ler dados de servidores a partir de um arquivo CSV
+function readCsvData(sqlite3 db, string filePath) {
+    FILE* file = fopen(filePath, "r")
+    if !file {
+        print("Erro ao abrir o arquivo CSV.")
+        return
+    }
+
+    char line[256]
+    while fgets(line, sizeof(line), file) {
+        Server server
+        char* token = strtok(line, ",")
+
+        // Nome do servidor
+        strcpy(server.name, token)
+
+        // Status do servidor
+        token = strtok(NULL, ",")
+        strcpy(server.status, token)
+
+        // Email do dono do servidor
+        token = strtok(NULL, ",")
+        strcpy(server.ownerEmail, token)
+
+        // Inserir servidor no banco de dados
+        insertServer(db, server)
+    }
+
+    fclose(file)
+}
+
+// Função principal
+function main() {
+    sqlite3 db = connectDatabase()
+    
+    if db == NULL {
+        return 1
+    }
+
+    // Inicializa o banco de dados e cria a tabela Servers
+    initializeDatabase(db)
+
+    // Lê os dados do arquivo CSV e insere no banco de dados
+    readCsvData(db, "servers_data.csv")
+
+    // Fecha o banco de dados
+    sqlite3_close(db)
+}
+
+// Chamada da função principal
+main()

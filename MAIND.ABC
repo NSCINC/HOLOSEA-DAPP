@@ -1,0 +1,73 @@
+@const INITIAL_CAPACITY = 10 // Capacidade inicial
+
+@struct InvestmentPlan {
+    planName: string
+    initialInvestment: int
+    monthlyReturn: int
+    annualReturn: int
+    netAnnualReturn: int
+    slots: int
+}
+
+@struct InvestmentPlanManager {
+    plans: InvestmentPlan[]
+    count: int
+    capacity: int
+}
+
+// Função para inicializar o gerenciador com memória dinâmica
+func initInvestmentPlanManager(manager: InvestmentPlanManager) {
+    manager.count = 0
+    manager.capacity = INITIAL_CAPACITY
+    manager.plans = new InvestmentPlan[manager.capacity] // Alocação dinâmica
+}
+
+// Função para adicionar um plano de investimento
+func addInvestmentPlan(manager: InvestmentPlanManager, planName: string, initialInvestment: int, monthlyReturn: int, annualReturn: int, netAnnualReturn: int, slots: int) {
+    if (manager.count >= manager.capacity) {
+        manager.capacity *= 2 // Dobre a capacidade
+        // Redimensione o array de planos
+        InvestmentPlan[] newPlans = new InvestmentPlan[manager.capacity]
+        for (i in 0 ..< manager.count) {
+            newPlans[i] = manager.plans[i] // Copia os planos antigos
+        }
+        manager.plans = newPlans // Aponte para o novo array
+    }
+    // Adicione o novo plano
+    manager.plans[manager.count] = InvestmentPlan(planName, initialInvestment, monthlyReturn, annualReturn, netAnnualReturn, slots)
+    manager.count += 1 // Incrementa a contagem de planos
+}
+
+// Função para liberar a memória
+func freeInvestmentPlanManager(manager: InvestmentPlanManager) {
+    // Não é necessário liberar 'plans' se o garbage collector gerenciar a memória
+    // no entanto, você pode adicionar alguma lógica se precisar de uma liberação explícita.
+    manager.count = 0
+    manager.capacity = 0
+}
+
+// Função principal
+func main() {
+    InvestmentPlanManager manager
+    initInvestmentPlanManager(manager)
+
+    // Adicionando alguns planos de investimento como exemplo
+    addInvestmentPlan(manager, "Plano A", 1000, 100, 1200, 1000, 5)
+    addInvestmentPlan(manager, "Plano B", 2000, 200, 2400, 2000, 10)
+
+    // Exibir os planos de investimento
+    for (i in 0 ..< manager.count) {
+        print("Plano: ", manager.plans[i].planName)
+        print("Investimento Inicial: ", manager.plans[i].initialInvestment)
+        print("Retorno Mensal: ", manager.plans[i].monthlyReturn)
+        print("Retorno Anual: ", manager.plans[i].annualReturn)
+        print("Retorno Anual Líquido: ", manager.plans[i].netAnnualReturn)
+        print("Slots: ", manager.plans[i].slots)
+    }
+
+    // Liberar a memória
+    freeInvestmentPlanManager(manager)
+}
+
+// Chamada da função principal
+main()

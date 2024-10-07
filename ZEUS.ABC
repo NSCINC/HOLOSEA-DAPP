@@ -1,0 +1,68 @@
+// Função para criar tabelas no banco de dados
+function createTables(sqlite3 db) {
+    char* errMsg = NULL
+
+    // Tabela de Usuários
+    string sqlUsers = "CREATE TABLE IF NOT EXISTS Users (" +
+                      "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                      "name TEXT NOT NULL," +
+                      "email TEXT NOT NULL," +
+                      "token TEXT NOT NULL);"
+
+    // Tabela de Controle de Servidores
+    string sqlServerData = "CREATE TABLE IF NOT EXISTS ServerData (" +
+                           "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                           "user_id INTEGER," +
+                           "server_name TEXT NOT NULL," +
+                           "status TEXT NOT NULL," +
+                           "last_checked DATETIME DEFAULT CURRENT_TIMESTAMP," +
+                           "FOREIGN KEY(user_id) REFERENCES Users(id));"
+
+    // Tabela de Logs do Data Center
+    string sqlLogData = "CREATE TABLE IF NOT EXISTS LogData (" +
+                        "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                        "server_id INTEGER," +
+                        "log_message TEXT," +
+                        "log_time DATETIME DEFAULT CURRENT_TIMESTAMP," +
+                        "FOREIGN KEY(server_id) REFERENCES ServerData(id));"
+
+    // Executa as instruções SQL
+    if sqlite3_exec(db, sqlUsers, NULL, NULL, &errMsg) != SQLITE_OK {
+        print("SQL error: ", errMsg)
+        sqlite3_free(errMsg)
+    }
+
+    if sqlite3_exec(db, sqlServerData, NULL, NULL, &errMsg) != SQLITE_OK {
+        print("SQL error: ", errMsg)
+        sqlite3_free(errMsg)
+    }
+
+    if sqlite3_exec(db, sqlLogData, NULL, NULL, &errMsg) != SQLITE_OK {
+        print("SQL error: ", errMsg)
+        sqlite3_free(errMsg)
+    }
+}
+
+// Função principal
+function main() {
+    sqlite3 db
+    int exit
+
+    // Abre o banco de dados
+    exit = sqlite3_open("apollo_holofi.db", &db)
+    if exit {
+        print("Can't open database: ", sqlite3_errmsg(db))
+        return exit
+    } else {
+        print("Opened database successfully")
+    }
+
+    // Cria as tabelas do Data Center Controller
+    createTables(db)
+
+    // Fecha o banco de dados
+    sqlite3_close(db)
+}
+
+// Chamada da função principal
+main()

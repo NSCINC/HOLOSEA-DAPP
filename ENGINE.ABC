@@ -1,0 +1,85 @@
+// Estrutura para o plano de investimento
+@struct InvestmentPlan {
+    planName: String
+    initialInvestment: Int
+    monthlyReturn: Int
+    annualReturn: Int
+    netAnnualReturn: Int
+    slots: Int
+}
+
+// Estrutura para o investimento
+@struct Investment {
+    planName: String
+    amount: Int
+    investorAddress: String
+}
+
+// Estrutura para o mecanismo Hollow
+@struct HollowEngine {
+    plans: InvestmentPlan[100]
+    investments: Investment[100]
+    planCount: Int
+    investmentCount: Int
+    authenticationContractAddress: String
+}
+
+// Função para inicializar o mecanismo Hollow
+func initializeHollowEngine(engine: HollowEngine, authenticationAddress: String) {
+    engine.authenticationContractAddress = authenticationAddress
+    engine.planCount = 0
+    engine.investmentCount = 0
+}
+
+// Função para adicionar um plano de investimento
+func addPlan(engine: HollowEngine, planName: String, initialInvestment: Int, monthlyReturn: Int, annualReturn: Int, netAnnualReturn: Int, slots: Int) {
+    if (engine.planCount >= 100) {
+        print("Error: Maximum number of investment plans reached.")
+        return
+    }
+    let plan = InvestmentPlan(planName: planName, initialInvestment: initialInvestment, monthlyReturn: monthlyReturn, annualReturn: annualReturn, netAnnualReturn: netAnnualReturn, slots: slots)
+    engine.plans[engine.planCount] = plan
+    engine.planCount += 1
+    print("Plan '${planName}' added successfully!")
+}
+
+// Função para investir em um plano
+func invest(engine: HollowEngine, planName: String, amount: Int, investorAddress: String) {
+    for i in 0 ..< engine.planCount {
+        if (engine.plans[i].planName == planName) {
+            if (engine.investmentCount >= 100) {
+                print("Error: Maximum number of investments reached.")
+                return
+            }
+            let investment = Investment(planName: planName, amount: amount, investorAddress: investorAddress)
+            engine.investments[engine.investmentCount] = investment
+            engine.investmentCount += 1
+            print("Investment of ${amount} completed successfully in plan '${planName}'!")
+            return
+        }
+    }
+    print("Error: Investment plan not found: ${planName}")
+}
+
+// Função para autenticar uma mensagem
+func authenticateMessage(messageHash: String) {
+    // Simula a lógica de autenticação da mensagem
+    print("Message '${messageHash}' authenticated successfully!")
+}
+
+// Função principal para teste
+func main() {
+    let engine = HollowEngine()
+    initializeHollowEngine(engine, "someAuthenticationAddress")
+
+    addPlan(engine, "Plan A", 1000, 100, 1200, 1100, 5)
+    addPlan(engine, "Plan B", 2000, 200, 2400, 2200, 10)
+
+    invest(engine, "Plan A", 500, "Investor1Address")
+    invest(engine, "Plan C", 1500, "Investor2Address") // Deve mostrar um erro
+
+    authenticateMessage("someMessageHash")
+}
+
+// Chamada da função principal
+main()

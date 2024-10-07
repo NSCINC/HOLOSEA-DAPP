@@ -1,0 +1,28 @@
+import java.util.ArrayList;
+
+class InvestmentPlan {
+    String planName;
+    int initialInvestment;
+    int monthlyReturn;
+    int annualReturn;
+    int netAnnualReturn;
+    int slots;
+
+    public InvestmentPlan(String planName, int initialInvestment, int monthlyReturn, int annualReturn, int netAnnualReturn, int slots) {
+        this.planName = planName;
+        this.initialInvestment = initialInvestment;
+        this.monthlyReturn = monthlyReturn;
+        this.annualReturn = annualReturn;
+        this.netAnnualReturn = netAnnualReturn;
+        this.slots = slots;
+    }
+}
+
+class InvestmentPlanManager {
+    private final ArrayList<InvestmentPlan> plans;
+
+    public InvestmentPlanManager() {
+        this.plans = new ArrayList<>();
+    }
+
+    // Função para adicionar um
