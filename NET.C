@@ -3,7 +3,7 @@
 #include <string.h>
 #include <web3c.h>
 
-#define APOLLO_LOCAL_URL "http://localhost:8545" // URL do seu nó Apollo local
+#define INFURA_MAINNET_URL "https://mainnet.infura.io/v3/YOUR_INFURA_PROJECT_ID" // Substitua pelo seu ID de projeto Infura
 
 // Função para verificar o número do bloco atual
 void check_block_number(web3_client_t *client) {
@@ -21,7 +21,7 @@ void check_block_number(web3_client_t *client) {
 
 int main() {
     // Criação do cliente Web3
-    web3_client_t *client = web3_client_new(APOLLO_LOCAL_URL);
+    web3_client_t *client = web3_client_new(INFURA_MAINNET_URL);
     
     if (client == NULL) {
         fprintf(stderr, "Error creating Web3 client.\n");

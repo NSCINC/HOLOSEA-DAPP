@@ -59,10 +59,10 @@ void runLuaContract(const char *script, const char *function, char *args[]) {
     }
 
     printf("Executando: %s\n", command);
-    system(command);
+    system(command);  // Executa o contrato via terminal
 }
 
-// Função para adicionar um plano
+// Função para adicionar um plano de investimento
 void addPlan(InvestmentRequest *request) {
     if (!validateNscToken(request->token)) {
         printf("Token NSC inválido\n");
@@ -72,14 +72,23 @@ void addPlan(InvestmentRequest *request) {
     char initialInvestmentStr[10];
     snprintf(initialInvestmentStr, sizeof(initialInvestmentStr), "%d", request->initialInvestment);
     char *args[] = {request->planName, initialInvestmentStr, NULL};
-    runLuaContract("investment_contract.lua", "add_plan", args);
+    
+    printf("Adicionando plano de investimento: %s\n", request->planName);
+    runLuaContract("investment_contract.lua", "add_plan", args);  // Executa o contrato Lua para adicionar plano
 }
 
-// Função para investir
+// Função para realizar o investimento
 void invest(InvestmentRequest *request) {
+    if (!validateNscToken(request->token)) {
+        printf("Token NSC inválido. Investimento não autorizado.\n");
+        return;
+    }
+
     char amountStr[10];
     snprintf(amountStr, sizeof(amountStr), "%d", request->amount);
     char *args[] = {request->planName, amountStr, request->investorAddress, NULL};
+
+    printf("Realizando investimento de %d no plano %s pelo investidor %s\n", request->amount, request->planName, request->investorAddress);
     runLuaContract("investment_contract.lua", "invest", args);
 }
 
@@ -88,11 +97,12 @@ int main() {
     SimpleNeuralNetwork neuralNetwork;
     initializeNeuralNetwork(&neuralNetwork);
     
+    // Dados simulados para o CRM (Customer Relationship Management)
     double crmData[MAX_WEIGHTS] = {500.0, 100.0, 5.0};
     double result = feedforward(&neuralNetwork, crmData);
-    printf("Resultado do processamento de CRM: %.2f\n", result);
+    printf("Resultado do processamento de CRM pela rede neural: %.2f\n", result);
     
-    // Simulando um pedido de investimento
+    // Simulação de um pedido de investimento
     InvestmentRequest request;
     strcpy(request.token, "valid_token");
     strcpy(request.planName, "Investment Plan A");
@@ -100,6 +110,7 @@ int main() {
     request.amount = 500;
     strcpy(request.investorAddress, "0x123456789");
 
+    // Adiciona um plano e executa o investimento
     addPlan(&request);
     invest(&request);
 

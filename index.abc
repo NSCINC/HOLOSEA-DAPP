@@ -1,0 +1,39 @@
+# Definição de variáveis e configurações para HoloSea
+
+define @investorIndex = -1
+define @spreadsheetPath = "dados_financeiros.csv"
+define @textReport = "Relatório financeiro para análise."
+
+# Função para processar dados da planilha
+function processSpreadsheet(spreadsheetPath) {
+    @data = read_spreadsheet(spreadsheetPath)
+    return analyze_data(@data)
+}
+
+# Função para processar relatório em texto
+function processText(textReport) {
+    @text_data = read_text(textReport)
+    return analyze_text(@text_data)
+}
+
+# Função para gerenciar dados, chamando as funções de IA
+function dataManagement(spreadsheetPath, textReport) {
+    @spreadsheetResult = processSpreadsheet(spreadsheetPath)
+    @textResult = processText(textReport)
+
+    # Analisando anomalias nos dados
+    if detectAnomalies(@spreadsheetResult) {
+        return "Anomalias detectadas"
+    } else {
+        return "Nenhuma anomalia detectada"
+    }
+}
+
+# Função para detectar anomalias nos dados (usando IA)
+function detectAnomalies(data) {
+    # Algoritmo de Machine Learning que identifica anomalias
+    return IA_detect_anomalies(data)
+}
+
+# Chamando o gerenciamento de dados
+result = dataManagement(@spreadsheetPath, @textReport)
